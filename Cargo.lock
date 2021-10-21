@@ -580,6 +580,7 @@ dependencies = [
  "flate2",
  "httpmock",
  "indicatif",
+ "itertools",
  "lexical-util",
  "libc",
  "log",
