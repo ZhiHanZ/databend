@@ -16,7 +16,7 @@ use std::borrow::Borrow;
 use std::path::Path;
 use std::process::Stdio;
 use std::str::FromStr;
-
+use std::io::{BufRead, Read};
 use async_trait::async_trait;
 use clap::App;
 use clap::AppSettings;
@@ -33,7 +33,8 @@ use crate::cmds::Status;
 use crate::cmds::Writer;
 use crate::error::CliError;
 use crate::error::Result;
-
+use std::io;
+use itertools::Itertools;
 pub const CLI_QUERY_CLIENT: &str = "CLI_QUERY_CLIENT";
 
 #[derive(Clone)]
@@ -96,7 +97,7 @@ impl QueryCommand {
                 Arg::new("query")
                     .about("Query statements to run")
                     .takes_value(true)
-                    .required(true),
+                    .required(false),
             )
             .arg(
                 Arg::new("file")
@@ -136,35 +137,40 @@ impl QueryCommand {
                 writer.write_ok("Query precheck passed!");
                 let status = Status::read(self.conf.clone())?;
                 if args.value_of("file").is_none() {
-                    if let Some(query) = args.value_of("query") {
-                        let url = build_query_url(args, &status);
-                        if let Ok(url) = url {
-                            writer.write_ok(format!("Execute query {} on {}", query, url).as_str());
-                            match execute_query(
-                                status.query_path.unwrap(),
-                                url,
-                                query.parse().unwrap(),
-                            ) {
-                                Ok(res) => {
-                                    writer.write_ok(res.as_str());
-                                }
-                                Err(e) => {
-                                    writer.write_err(format!("Query command error: cannot execute query with error: {:?}", e).as_str());
-                                }
-                            }
-                            return Ok(());
-                        } else {
-                            writer.write_err(
-                                format!(
-                                    "Query command error: cannot parse query url with error: {:?}",
-                                    url.unwrap_err()
-                                )
-                                .as_str(),
-                            );
+                    let query = match args.value_of("query") {
+                        Some(query) => query.to_string(),
+                        None => {
+                            let mut stdin = io::stdin();
+                            let mut str = String::new();
+                            stdin.read_to_string(&mut str);
+                            str
+
                         }
-                    } else {
-                        writer.write_err("Query command error: cannot find SQL argument!");
+                    };
+                    let url = build_query_url(args, &status);
+                    if let Ok(url) = url {
+                        writer.write_ok(format!("Execute query {} on {}", query, url).as_str());
+                        match execute_query(
+                            status.query_path.unwrap(),
+                            url,
+                            query.parse().unwrap(),
+                        ) {
+                            Ok(res) => {
+                                writer.write_ok(res.as_str());
+                            }
+                            Err(e) => {
+                                writer.write_err(format!("Query command error: cannot execute query with error: {:?}", e).as_str());
+                            }
+                        }
                         return Ok(());
+                    } else {
+                        writer.write_err(
+                            format!(
+                                "Query command error: cannot parse query url with error: {:?}",
+                                url.unwrap_err()
+                            )
+                                .as_str(),
+                        );
                     }
                 } else {
                     todo!()
@@ -240,10 +246,14 @@ fn execute_query(bin_path: String, url: String, query: String) -> Result<String>
     let mut command = std::process::Command::new(bin_path);
     command.args([url.as_str(), "-c", query.as_str()]);
     // Tell the OS to record the command's output
-    command.stdout(Stdio::piped()).stderr(Stdio::null());
+    command.stdout(Stdio::piped()).stderr(Stdio::piped());
     // execute the command, wait for it to complete, then capture the output
     return match command.output() {
         Ok(output) => {
+            let stderr = String::from_utf8(output.stderr).unwrap().trim().to_string();
+            if !stderr.is_empty() {
+                return Ok(stderr)
+            }
             let stdout = String::from_utf8(output.stdout).unwrap().trim().to_string();
             Ok(stdout)
         }

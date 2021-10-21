@@ -29,6 +29,7 @@ mod queries;
 mod status;
 mod versions;
 mod writer;
+mod ups;
 
 pub use clusters::cluster::ClusterCommand;
 pub use clusters::create::CreateCommand;
