@@ -17,11 +17,7 @@ use std::io::Read;
 use std::mem;
 use std::os::raw::c_char;
 use std::os::raw::c_int;
-
-use byteorder::LittleEndian;
-use byteorder::WriteBytesExt;
-use clickhouse_rs_cityhash_sys::city_hash_128;
-use clickhouse_rs_cityhash_sys::UInt128;
+use byteorder::{LittleEndian, BigEndian, WriteBytesExt, ReadBytesExt};
 use lz4::liblz4::LZ4_decompress_safe;
 
 use crate::binary::ReadEx;
@@ -74,11 +70,12 @@ where R: Read + ReadEx
 }
 
 fn decompress_buffer<R>(reader: &mut R, mut buffer: Vec<u8>) -> Result<Vec<u8>>
-where R: ReadEx {
-    let h = UInt128 {
-        lo: reader.read_scalar()?,
-        hi: reader.read_scalar()?,
-    };
+where R: Read + ReadEx {
+    let checksum_high: u64 = reader.read_scalar()?;
+    let checksum_low: u64 = reader.read_scalar()?;
+    let checksum = ((checksum_high as u128) << 64)
+        | checksum_low as u128;
+
 
     let method: u8 = reader.read_scalar()?;
     if method != 0x82 {
@@ -102,7 +99,7 @@ where R: ReadEx {
     }
     reader.read_bytes(&mut buffer[9..])?;
 
-    if h != city_hash_128(&buffer) {
+    if checksum != cityhash_rs::cityhash_102_128(&buffer[..]) {
         return Err(raise_error("data was corrupted".to_string()));
     }
 

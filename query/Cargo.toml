@@ -46,7 +46,7 @@ common-io = { path = "../common/io" }
 common-clickhouse-srv = { path = "../common/clickhouse-srv" }
 # Github dependencies
 msql-srv = { git = "https://github.com/datafuse-extras/msql-srv", rev = "e4c8f3d" }
-clickhouse-rs = { git = "https://github.com/datafuse-extras/clickhouse-rs", rev = "c4743a9" }
+clickhouse-rs = { git = "https://github.com/zhihanz/clickhouse-rs", rev = "1fe56bd" }
 sqlparser = { git = "https://github.com/datafuse-extras/sqlparser-rs", rev = "cdd2ce1" }
 
 # Crates.io dependencies
