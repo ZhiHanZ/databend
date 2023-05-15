@@ -3,6 +3,7 @@
 CURDIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 . "$CURDIR"/../../../shell_env.sh
 
+echo $DATABEND_ENTERPRISE_LICENSE
 ## Setup
 echo "drop database if exists test_vacuum" | $MYSQL_CLIENT_CONNECT
 
