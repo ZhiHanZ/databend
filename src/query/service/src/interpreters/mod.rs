@@ -130,6 +130,7 @@ mod interpreter_virtual_column_alter;
 mod interpreter_virtual_column_create;
 mod interpreter_virtual_column_drop;
 mod interpreter_virtual_column_refresh;
+mod interpreter_pipe_create;
 
 pub use access::ManagementModeAccess;
 pub use common::InterpreterQueryLog;
@@ -224,3 +225,4 @@ pub use interpreter_virtual_column_alter::AlterVirtualColumnInterpreter;
 pub use interpreter_virtual_column_create::CreateVirtualColumnInterpreter;
 pub use interpreter_virtual_column_drop::DropVirtualColumnInterpreter;
 pub use interpreter_virtual_column_refresh::RefreshVirtualColumnInterpreter;
+pub use interpreter_pipe_create::CreatePipeInterpreter;

@@ -19,15 +19,18 @@ mod stream;
 mod table;
 mod task;
 mod util;
+mod pipe;
+pub mod cloud;
 
 pub use grant::validate_grant_object_exists;
 pub use query_log::InterpreterQueryLog;
 pub use stream::build_update_stream_meta_seq;
 pub use table::check_referenced_computed_columns;
-pub use task::get_client_config;
+pub use cloud::get_client_config;
 pub use task::make_schedule_options;
 pub use task::make_warehouse_options;
 pub use util::check_deduplicate_label;
 pub use util::create_push_down_filters;
-
+pub use pipe::get_source_options;
+pub use pipe::get_target_options;
 pub use self::metrics::*;

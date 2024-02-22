@@ -192,11 +192,14 @@ impl Plan {
             Plan::ExecuteTask(_) => Ok("ExecuteTask".to_string()),
             Plan::ShowTasks(_) => Ok("ShowTasks".to_string()),
 
-            // task
+            // connection
             Plan::CreateConnection(_) => Ok("CreateConnection".to_string()),
             Plan::DescConnection(_) => Ok("DescConnection".to_string()),
             Plan::DropConnection(_) => Ok("DropConnection".to_string()),
             Plan::ShowConnections(_) => Ok("ShowConnections".to_string()),
+
+            // Pipe
+            Plan::CreatePipe(_) => Ok("CreatePipe".to_string()),
         }
     }
 }

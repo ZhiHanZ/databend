@@ -27,7 +27,7 @@ use databend_common_expression::DataSchemaRefExt;
 use super::SetSecondaryRolesPlan;
 use crate::optimizer::SExpr;
 use crate::plans::copy_into_location::CopyIntoLocationPlan;
-use crate::plans::AddTableColumnPlan;
+use crate::plans::{AddTableColumnPlan, CreatePipePlan};
 use crate::plans::AlterNetworkPolicyPlan;
 use crate::plans::AlterPasswordPolicyPlan;
 use crate::plans::AlterShareTenantsPlan;
@@ -318,6 +318,9 @@ pub enum Plan {
     DescribeTask(Box<DescribeTaskPlan>),
     ShowTasks(Box<ShowTasksPlan>),
     ExecuteTask(Box<ExecuteTaskPlan>),
+
+    // Pipe
+    CreatePipe(Box<CreatePipePlan>),
 }
 
 #[derive(Clone, Debug)]

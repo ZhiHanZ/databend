@@ -515,6 +515,11 @@ impl InterpreterFactory {
                 *p.clone(),
             )?)),
             Plan::ShowConnections(_) => Ok(Arc::new(ShowConnectionsInterpreter::try_create(ctx)?)),
+
+            Plan::CreatePipe(p) => Ok(Arc::new(CreatePipeInterpreter::try_create(
+                ctx,
+                *p.clone(),
+            )?)),
         }
     }
 }

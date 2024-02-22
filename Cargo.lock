@@ -392,7 +392,7 @@ dependencies = [
  "futures",
  "once_cell",
  "paste",
- "prost 0.12.1",
+ "prost 0.12.3",
  "tokio",
  "tonic 0.10.2",
 ]
@@ -403,8 +403,8 @@ version = "0.8.1"
 source = "git+https://github.com/everpcpc/arrow-format?rev=ad8f2dd#ad8f2ddc105e4d32c76cea1e71c7ff78c18076ca"
 dependencies = [
  "planus",
- "prost 0.12.1",
- "prost-derive 0.12.1",
+ "prost 0.12.3",
+ "prost-derive 0.12.3",
  "serde",
  "tonic 0.10.2",
 ]
@@ -1773,7 +1773,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd326812b3fd01da5bb1af7d340d0d555fd3d4b641e7f1dfcf5962a902952787"
 dependencies = [
  "futures-core",
- "prost 0.12.1",
+ "prost 0.12.3",
  "prost-types",
  "tonic 0.10.2",
  "tracing-core",
@@ -2546,8 +2546,9 @@ dependencies = [
  "databend-common-base",
  "databend-common-exception",
  "lenient_semver",
- "prost 0.12.1",
+ "prost 0.12.3",
  "prost-build",
+ "prost-types",
  "semver",
  "tonic 0.10.2",
  "tonic-build",
@@ -2629,7 +2630,7 @@ dependencies = [
  "opendal",
  "parquet",
  "paste",
- "prost 0.12.1",
+ "prost 0.12.3",
  "serde",
  "serde_json",
  "thiserror",
@@ -2881,7 +2882,7 @@ dependencies = [
  "log",
  "minitrace",
  "mockall",
- "prost 0.12.1",
+ "prost 0.12.3",
  "serde",
  "serde_json",
  "thiserror",
@@ -2907,7 +2908,7 @@ dependencies = [
  "logcall",
  "maplit",
  "minitrace",
- "prost 0.12.1",
+ "prost 0.12.3",
  "rand 0.8.5",
  "serde",
  "serde_json",
@@ -2972,7 +2973,7 @@ dependencies = [
  "minitrace",
  "once_cell",
  "parking_lot 0.12.1",
- "prost 0.12.1",
+ "prost 0.12.3",
  "rand 0.8.5",
  "semver",
  "serde",
@@ -3028,7 +3029,7 @@ dependencies = [
  "databend-common-protos",
  "databend-common-tracing",
  "openraft 0.9.0",
- "prost 0.12.1",
+ "prost 0.12.3",
  "serde",
  "serde_json",
 ]
@@ -3101,7 +3102,7 @@ version = "0.1.0"
 dependencies = [
  "anyerror",
  "databend-common-exception",
- "prost 0.12.1",
+ "prost 0.12.3",
  "serde",
  "serde_json",
  "sled",
@@ -3137,7 +3138,7 @@ dependencies = [
  "num-derive",
  "num-traits",
  "openraft 0.9.0",
- "prost 0.12.1",
+ "prost 0.12.3",
  "prost-build",
  "regex",
  "serde",
@@ -3276,7 +3277,7 @@ dependencies = [
  "minitrace",
  "num",
  "pretty_assertions",
- "prost 0.12.1",
+ "prost 0.12.3",
  "thiserror",
 ]
 
@@ -3287,7 +3288,7 @@ dependencies = [
  "lenient_semver",
  "num-derive",
  "num-traits",
- "prost 0.12.1",
+ "prost 0.12.3",
  "prost-build",
  "semver",
  "tonic 0.10.2",
@@ -4148,7 +4149,7 @@ dependencies = [
  "poem",
  "pretty_assertions",
  "prometheus-client",
- "prost 0.12.1",
+ "prost 0.12.3",
  "regex",
  "reqwest",
  "semver",
@@ -4285,7 +4286,7 @@ dependencies = [
  "pin-project-lite",
  "poem",
  "pretty_assertions",
- "prost 0.12.1",
+ "prost 0.12.3",
  "rand 0.8.5",
  "regex",
  "reqwest",
@@ -10349,12 +10350,12 @@ dependencies = [
 
 [[package]]
 name = "prost"
-version = "0.12.1"
+version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4fdd22f3b9c31b53c060df4a0613a1c7f062d4115a2b984dd15b1858f7e340d"
+checksum = "146c289cda302b98a28d40c8b3b90498d6e526dd24ac2ecea73e4e491685b94a"
 dependencies = [
  "bytes",
- "prost-derive 0.12.1",
+ "prost-derive 0.12.3",
 ]
 
 [[package]]
@@ -10371,7 +10372,7 @@ dependencies = [
  "once_cell",
  "petgraph",
  "prettyplease",
- "prost 0.12.1",
+ "prost 0.12.3",
  "prost-types",
  "regex",
  "syn 2.0.46",
@@ -10394,9 +10395,9 @@ dependencies = [
 
 [[package]]
 name = "prost-derive"
-version = "0.12.1"
+version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "265baba7fabd416cf5078179f7d2cbeca4ce7a9041111900675ea7c4cb8a4c32"
+checksum = "efb6c9a1dd1def8e2124d17e83a20af56f1570d6c2d2bd9e266ccb768df3840e"
 dependencies = [
  "anyhow",
  "itertools 0.11.0",
@@ -10407,11 +10408,11 @@ dependencies = [
 
 [[package]]
 name = "prost-types"
-version = "0.12.1"
+version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e081b29f63d83a4bc75cfc9f3fe424f9156cf92d8a4f0c9407cce9a1b67327cf"
+checksum = "193898f59edcf43c26227dcd4c8427f00d99d61e95dcde58dabd49fa291d470e"
 dependencies = [
- "prost 0.12.1",
+ "prost 0.12.3",
 ]
 
 [[package]]
@@ -12864,7 +12865,7 @@ dependencies = [
  "hyper-timeout",
  "percent-encoding",
  "pin-project",
- "prost 0.12.1",
+ "prost 0.12.3",
  "rustls",
  "rustls-native-certs",
  "rustls-pemfile",
@@ -12896,7 +12897,7 @@ version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3fa37c513df1339d197f4ba21d28c918b9ef1ac1768265f11ecb6b7f1cba1b76"
 dependencies = [
- "prost 0.12.1",
+ "prost 0.12.3",
  "prost-types",
  "tokio",
  "tokio-stream",

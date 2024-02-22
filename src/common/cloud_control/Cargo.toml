@@ -17,6 +17,7 @@ databend-common-base = { path = "../base" }
 databend-common-exception = { path = "../exception" }
 prost = { workspace = true }
 tonic = { workspace = true }
+prost-types = "0.12.3"
 
 [build-dependencies]
 lenient_semver = "0.4.2"

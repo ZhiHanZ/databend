@@ -23,7 +23,7 @@ use databend_common_exception::ErrorCode;
 use databend_common_exception::Result;
 use databend_common_sql::plans::CreateTaskPlan;
 
-use crate::interpreters::common::get_client_config;
+use crate::interpreters::common::cloud::get_client_config;
 use crate::interpreters::common::make_schedule_options;
 use crate::interpreters::common::make_warehouse_options;
 use crate::interpreters::Interpreter;

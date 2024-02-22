@@ -15,45 +15,51 @@
 use std::sync::Arc;
 
 use databend_common_cloud_control::cloud_api::CloudControlApiProvider;
-use databend_common_cloud_control::pb::DropTaskRequest;
+use databend_common_cloud_control::pb::CreatePipeRequest;
 use databend_common_cloud_control::task_client::make_request;
 use databend_common_config::GlobalConfig;
 use databend_common_exception::ErrorCode;
 use databend_common_exception::Result;
-use databend_common_sql::plans::DropTaskPlan;
+use databend_common_sql::plans::CreatePipePlan;
 
+use crate::interpreters::common::{get_source_options, get_target_options};
 use crate::interpreters::common::cloud::get_client_config;
 use crate::interpreters::Interpreter;
 use crate::pipelines::PipelineBuildResult;
 use crate::sessions::QueryContext;
 
 #[derive(Debug)]
-pub struct DropTaskInterpreter {
+pub struct CreatePipeInterpreter {
     ctx: Arc<QueryContext>,
-    plan: DropTaskPlan,
+    plan: CreatePipePlan,
 }
 
-impl DropTaskInterpreter {
-    pub fn try_create(ctx: Arc<QueryContext>, plan: DropTaskPlan) -> Result<Self> {
-        Ok(DropTaskInterpreter { ctx, plan })
+impl CreatePipeInterpreter {
+    pub fn try_create(ctx: Arc<QueryContext>, plan: CreatePipePlan) -> Result<Self> {
+        Ok(CreatePipeInterpreter { ctx, plan })
     }
 }
 
-impl DropTaskInterpreter {
-    fn build_request(&self) -> DropTaskRequest {
+impl CreatePipeInterpreter {
+    // todo owner info add-on
+    fn build_request(&self) -> CreatePipeRequest {
         let plan = self.plan.clone();
-        DropTaskRequest {
-            task_name: plan.task_name,
+        CreatePipeRequest {
+            pipe_name: plan.pipe_name,
             tenant_id: plan.tenant,
-            if_exist: plan.if_exists,
+            source_options: Some(get_source_options(&plan.copy_stmt)),
+            target_options: Some(get_target_options(&plan.copy_stmt)),
+            file_detection_options: None,
+            warehouse_name: plan.warehouse_name,
+            definition: plan.definition,
         }
     }
 }
 
 #[async_trait::async_trait]
-impl Interpreter for DropTaskInterpreter {
+impl Interpreter for CreatePipeInterpreter {
     fn name(&self) -> &str {
-        "DropTaskInterpreter"
+        "CreatePipeInterpreter"
     }
 
     #[minitrace::trace]
@@ -62,15 +68,15 @@ impl Interpreter for DropTaskInterpreter {
         let config = GlobalConfig::instance();
         if config.query.cloud_control_grpc_server_address.is_none() {
             return Err(ErrorCode::CloudControlNotEnabled(
-                "cannot drop task without cloud control enabled, please set cloud_control_grpc_server_address in config",
+                "cannot create task without cloud control enabled, please set cloud_control_grpc_server_address in config",
             ));
         }
         let cloud_api = CloudControlApiProvider::instance();
-        let task_client = cloud_api.get_task_client();
+        let pipe_client = cloud_api.get_pipe_client();
         let req = self.build_request();
         let config = get_client_config(self.ctx.clone(), cloud_api.get_timeout())?;
         let req = make_request(req, config);
-        task_client.drop_task(req).await?;
+        pipe_client.create_pipe(req).await?;
         Ok(PipelineBuildResult::create())
     }
 }

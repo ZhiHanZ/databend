@@ -23,7 +23,7 @@ use databend_common_exception::Result;
 use databend_common_sql::plans::ShowTasksPlan;
 use databend_common_storages_system::parse_tasks_to_datablock;
 
-use crate::interpreters::common::get_client_config;
+use crate::interpreters::common::cloud::get_client_config;
 use crate::interpreters::Interpreter;
 use crate::pipelines::PipelineBuildResult;
 use crate::sessions::QueryContext;

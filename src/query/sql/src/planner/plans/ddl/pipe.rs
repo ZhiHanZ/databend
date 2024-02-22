@@ -12,21 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod account;
-mod catalog;
-mod column;
-mod connection;
-mod data_mask;
-mod database;
-mod index;
-mod network_policy;
-mod password_policy;
-mod role;
-mod share;
-mod stage;
-mod stream;
-mod table;
-mod task;
-mod view;
-mod virtual_column;
-mod pipe;
+use databend_common_expression::DataSchemaRef;
+use databend_common_expression::DataSchemaRefExt;
+use crate::plans::{CopyIntoTablePlan};
+
+
+#[derive(Clone, Debug)]
+pub struct CreatePipePlan {
+    pub if_not_exists: bool,
+    pub tenant: String,
+    pub pipe_name: String,
+    pub auto_ingest: bool,
+    pub copy_stmt: Box<CopyIntoTablePlan>,
+    pub definition: String,
+    pub warehouse_name: Option<String>,
+    pub comment: String,
+}
+
+impl CreatePipePlan {
+    pub fn schema(&self) -> DataSchemaRef {
+        DataSchemaRefExt::create(vec![])
+    }
+}

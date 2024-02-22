@@ -599,8 +599,8 @@ impl<'a> Binder {
             Statement::ShowStreams(stmt) => self.bind_show_streams(bind_context, stmt).await?,
             Statement::DescribeStream(stmt) => self.bind_describe_stream(bind_context, stmt).await?,
 
-            Statement::CreatePipe(_) => {
-                todo!()
+            Statement::CreatePipe(stmt) => {
+                self.bind_create_pipe(bind_context, stmt).await?
             }
             Statement::DescribePipe(_) => {
                 todo!()

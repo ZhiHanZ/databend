@@ -25,6 +25,7 @@ mod task;
 mod udf;
 mod view;
 mod virtual_column;
+mod pipe;
 
 pub use account::*;
 pub use catalog::*;
@@ -39,3 +40,4 @@ pub use task::*;
 pub use udf::*;
 pub use view::*;
 pub use virtual_column::*;
+pub use pipe::*;

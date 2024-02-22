@@ -12,18 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::sync::Arc;
-use std::time::Duration;
-
 use databend_common_ast::ast::ScheduleOptions;
 use databend_common_ast::ast::WarehouseOptions;
-use databend_common_catalog::table_context::TableContext;
-use databend_common_cloud_control::client_config::build_client_config;
-use databend_common_cloud_control::client_config::ClientConfig;
 use databend_common_cloud_control::pb::schedule_options::ScheduleType;
-use databend_common_exception::Result;
-
-use crate::sessions::QueryContext;
 
 pub fn make_schedule_options(
     opt: ScheduleOptions,
@@ -58,12 +49,4 @@ pub fn make_warehouse_options(
         ret.warehouse = Some(warehouse);
     }
     ret
-}
-
-pub fn get_client_config(ctx: Arc<QueryContext>, timeout: Duration) -> Result<ClientConfig> {
-    let tenant = ctx.get_tenant();
-    let user = ctx.get_current_user()?.identity().to_string();
-    let query_id = ctx.get_id();
-
-    Ok(build_client_config(tenant, user, query_id, timeout))
 }

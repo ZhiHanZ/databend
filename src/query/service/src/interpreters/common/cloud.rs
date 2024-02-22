@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod account;
-mod catalog;
-mod column;
-mod connection;
-mod data_mask;
-mod database;
-mod index;
-mod network_policy;
-mod password_policy;
-mod role;
-mod share;
-mod stage;
-mod stream;
-mod table;
-mod task;
-mod view;
-mod virtual_column;
-mod pipe;
+use std::sync::Arc;
+use std::time::Duration;
+use databend_common_catalog::table_context::TableContext;
+use databend_common_cloud_control::client_config::{build_client_config, ClientConfig};
+use crate::sessions::QueryContext;
+
+pub fn get_client_config(ctx: Arc<QueryContext>, timeout: Duration) -> databend_common_exception::Result<ClientConfig> {
+    let tenant = ctx.get_tenant();
+    let user = ctx.get_current_user()?.identity().to_string();
+    let query_id = ctx.get_id();
+
+    Ok(build_client_config(tenant, user, query_id, timeout))
+}
+

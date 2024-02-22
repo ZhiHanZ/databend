@@ -18,6 +18,7 @@ use std::time::Duration;
 use databend_common_base::base::GlobalInstance;
 use databend_common_exception::ErrorCode;
 use databend_common_exception::Result;
+use crate::pipe_client::PipeClient;
 
 use crate::task_client::TaskClient;
 
@@ -30,6 +31,7 @@ pub const QUERY_ID: &str = "X-DATABEND-QUERY-ID";
 
 pub struct CloudControlApiProvider {
     pub task_client: Arc<TaskClient>,
+    pub pipe_client: Arc<PipeClient>,
     pub timeout: Duration,
 }
 
@@ -42,11 +44,12 @@ impl CloudControlApiProvider {
         };
 
         let endpoint = Self::get_endpoint(endpoint, timeout).await?;
-        let task_client = TaskClient::new(endpoint).await?;
-
+        let task_client = TaskClient::new(endpoint.clone()).await?;
+        let pipe_client = PipeClient::new(endpoint).await?;
         Ok(Arc::new(CloudControlApiProvider {
             task_client,
             timeout,
+            pipe_client,
         }))
     }
 
@@ -79,6 +82,11 @@ impl CloudControlApiProvider {
     pub fn get_task_client(&self) -> Arc<TaskClient> {
         self.task_client.clone()
     }
+
+    pub fn get_pipe_client(&self) -> Arc<PipeClient> {
+        self.pipe_client.clone()
+    }
+
     pub fn get_timeout(&self) -> Duration {
         self.timeout
     }

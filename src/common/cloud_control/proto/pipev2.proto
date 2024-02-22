@@ -1,0 +1,218 @@
+syntax = "proto3";
+option go_package = "databend.com/cloudcontrol/pipe/v2/proto";
+import "google/protobuf/timestamp.proto";
+
+package pipev2proto;
+
+
+message PipeError {
+  string kind = 1;
+  string message = 2;
+  int32 code = 3;
+}
+
+message StageInfo {
+  string stage_name = 1;
+  string stage_type = 2;
+  // StageFilesInfo
+  optional string path = 11;
+  optional string pattern = 12;
+}
+
+
+message SourceOptions {
+  StageInfo stage_info = 3;
+}
+
+// TODO: add file notification and listing options
+enum FileDetectionMode {
+  None = 0;
+}
+
+message FileDetectionOptions {
+  FileDetectionMode mode = 1;
+}
+
+message PipeFile{
+  string tenant_id = 1;
+  string pipe_name = 2;
+  string stage_name = 3;
+  string file_name = 4;
+  uint64 file_size = 5;
+}
+
+
+message PipeStats {
+  int64 pipe_id = 1;
+  int64 total_count = 2;
+  int64 success_count = 3;
+  int64 processing_count = 4;
+  int64 failed_count = 5;
+  int64 pending_count = 6;
+  int64 queuing_count = 8;
+  string message = 7;
+}
+
+message TargetOptions {
+  string target_database = 1;
+  string target_table = 2;
+}
+
+message PipeStatus {
+  enum Status {
+    RUNNING = 0;
+    STOP = 1;
+    STARTED = 2;
+  }
+  string pipe_name = 1;
+  string definition = 2;
+  SourceOptions source_options = 3;
+  FileDetectionOptions file_detection_options = 4;
+  TargetOptions target_options = 5;
+  Status status = 6;
+  PipeStats stats = 7;
+  string warehouse_name = 8;
+
+  google.protobuf.Timestamp created_time = 10;
+  string created_by = 11;
+  google.protobuf.Timestamp updated_time = 12;
+  string updated_by = 13;
+}
+
+message PipeTask {
+  enum Status {
+    Pending = 0;
+    Queuing = 5;
+    Processing = 1;
+    Success = 2;
+    Failed = 3;
+  }
+  uint64 task_id = 1;
+  string tenant_id = 2;
+  string pipe_name = 3;
+  string stage = 4;
+  string file = 5;
+  uint64 file_size = 6;
+  Status status = 7;
+  int64 duration = 8;
+  optional PipeError error = 9;
+  google.protobuf.Timestamp started_at = 14;
+  google.protobuf.Timestamp finished_at = 15;
+}
+
+// expected behavior
+// register user iam role and external id to postgres
+message CreatePipeRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+  string definition = 3;
+  SourceOptions source_options = 4;
+  TargetOptions target_options = 5;
+  FileDetectionOptions file_detection_options = 6;
+  optional string warehouse_name = 7;
+}
+
+message CreatePipeResponse {
+  optional PipeError error = 1;
+}
+
+message DropPipeRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+}
+
+message DropPipeResponse {
+  optional PipeError error = 1;
+}
+
+message SuspendPipeRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+  bool suspend = 3;
+}
+
+message SuspendPipeResponse {
+  optional PipeError error = 1;
+}
+
+message AlterPipeRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+  optional string definition = 3;
+  SourceOptions source_options = 4;
+  TargetOptions target_options = 5;
+  FileDetectionOptions file_detection_options = 6;
+  optional string warehouse_name = 7;
+}
+
+message AlterPipeResponse {
+  optional PipeError error = 1;
+}
+
+message ListPipeRequest {
+  string tenant_id = 1;
+  optional TargetOptions target = 2;
+}
+
+message ListPipeResponse {
+  optional PipeError error = 1;
+  repeated PipeStatus pipe_status = 5;
+}
+
+message GetPipeRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+}
+
+message GetPipeResponse {
+  optional PipeError error = 1;
+  PipeStatus pipe_status = 5;
+}
+
+
+message ListPipeTasksRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+  bool   running_only  =  3;
+  optional int32 page_size = 4; // 100 by default
+  optional int64 next_page_token = 5;
+  optional int64 previous_page_token = 6;
+  optional string keyword = 7;
+}
+
+message ListPipeTasksResponse {
+  optional PipeError error = 1;
+  repeated PipeTask pipe_tasks = 5;
+  // you can pass the next_page_token to the list request to get the next page. so does previous_page_token.
+  optional int64 next_page_token = 6;
+  optional int64 previous_page_token = 7;
+}
+
+message InsertFiles {
+  string path = 1;
+  optional uint64 size = 2;
+}
+
+message InsertFilesRequest {
+  string tenant_id = 1;
+  string pipe_name = 2;
+  repeated InsertFiles files = 3;
+  optional string request_id = 4;
+}
+
+// since it is an async queue, no need to add ingestion process info such as row_affected, ingested_bytes and so on.
+message InsertFilesResponse {
+  optional PipeError error = 1;
+  optional string request_id = 3;
+}
+
+service PipeV2Service {
+  rpc CreatePipe(CreatePipeRequest) returns (CreatePipeResponse);
+  rpc DropPipe(DropPipeRequest) returns (DropPipeResponse);
+  rpc AlterPipe(AlterPipeRequest) returns (AlterPipeResponse);
+  rpc ListPipe(ListPipeRequest) returns (ListPipeResponse);
+  rpc GetPipe(GetPipeRequest) returns (GetPipeResponse);
+  rpc ListPipeTasks(ListPipeTasksRequest) returns (ListPipeTasksResponse);
+  rpc SuspendPipe(SuspendPipeRequest) returns (SuspendPipeResponse);
+  rpc InsertFiles(InsertFilesRequest) returns (InsertFilesResponse);
+}
